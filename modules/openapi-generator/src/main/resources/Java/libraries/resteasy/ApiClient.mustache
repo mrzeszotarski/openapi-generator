@@ -480,35 +480,34 @@ public class ApiClient {
    * @throws ApiException on failure to serialize
    */
   public Entity<?> serialize(Object obj, Map<String, Object> formParams, String contentType) throws ApiException {
-    Entity<?> entity = null;
-    if (contentType.startsWith("multipart/form-data")) {
-      MultipartFormDataOutput multipart = new MultipartFormDataOutput();
-      //MultiPart multiPart = new MultiPart();
-      for (Entry<String, Object> param: formParams.entrySet()) {
-        if (param.getValue() instanceof File) {
-          File file = (File) param.getValue();
-          try {
-            multipart.addFormData(param.getValue().toString(),new FileInputStream(file),MediaType.APPLICATION_OCTET_STREAM_TYPE);
-          } catch (FileNotFoundException e) {
-            throw new ApiException("Could not serialize multipart/form-data "+e.getMessage());
+      Entity<?> entity = null;
+      if (contentType.startsWith("multipart/form-data")) {
+        MultipartFormDataOutput multipart = new MultipartFormDataOutput();
+        for (Entry<String, Object> param: formParams.entrySet()) {
+          if (param.getValue() instanceof File) {
+            File file = (File) param.getValue();
+            try {
+              multipart.addFormData(param.getKey(), new FileInputStream(file),MediaType.APPLICATION_OCTET_STREAM_TYPE);
+            } catch (FileNotFoundException e) {
+              throw new ApiException("Could not serialize multipart/form-data "+e.getMessage());
+            }
+          } else {
+            multipart.addFormData(param.getKey(),param.getValue().toString(),MediaType.APPLICATION_OCTET_STREAM_TYPE);
           }
-        } else {
-          multipart.addFormData(param.getValue().toString(),param.getValue().toString(),MediaType.APPLICATION_OCTET_STREAM_TYPE);
         }
+        entity = Entity.entity(multipart, MediaType.MULTIPART_FORM_DATA_TYPE);
+      } else if (contentType.startsWith("application/x-www-form-urlencoded")) {
+        Form form = new Form();
+        for (Entry<String, Object> param: formParams.entrySet()) {
+          form.param(param.getKey(), parameterToString(param.getValue()));
+        }
+        entity = Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE);
+      } else {
+        // We let jersey handle the serialization
+        entity = Entity.entity(obj, contentType);
       }
-      entity = Entity.entity(multipart.getFormData(), MediaType.MULTIPART_FORM_DATA_TYPE);
-    } else if (contentType.startsWith("application/x-www-form-urlencoded")) {
-      Form form = new Form();
-      for (Entry<String, Object> param: formParams.entrySet()) {
-        form.param(param.getKey(), parameterToString(param.getValue()));
-      }
-      entity = Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE);
-    } else {
-      // We let jersey handle the serialization
-      entity = Entity.entity(obj, contentType);
+      return entity;
     }
-    return entity;
-  }
 
   /**
    * Deserialize response body to Java object according to the Content-Type.

@@ -1,6 +1,6 @@
 /*
  * OpenAPI Petstore
- * This spec is mainly for testing Petstore server and contains fake endpoints, models. Please do not use this for any other purpose. Special characters: \" \\
+ * This is a sample server Petstore server. For this sample, you can use the api key `special-key` to test the authorization filters.
  *
  * OpenAPI spec version: 1.0.0
  * 
@@ -13,17 +13,16 @@
 
 package org.openapitools.client.api;
 
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.openapitools.client.ApiException;
-import java.io.File;
 import org.openapitools.client.model.ModelApiResponse;
 import org.openapitools.client.model.Pet;
-import org.junit.Test;
-import org.junit.Ignore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * API tests for PetApi
@@ -44,8 +43,8 @@ public class PetApiTest {
      */
     @Test
     public void addPetTest() throws ApiException {
-        Pet pet = null;
-        api.addPet(pet);
+        Pet body = null;
+        api.addPet(body);
 
         // TODO: test validations
     }
@@ -125,8 +124,8 @@ public class PetApiTest {
      */
     @Test
     public void updatePetTest() throws ApiException {
-        Pet pet = null;
-        api.updatePet(pet);
+        Pet body = null;
+        api.updatePet(body);
 
         // TODO: test validations
     }
@@ -158,13 +157,17 @@ public class PetApiTest {
      *          if the Api call fails
      */
     @Test
-    public void uploadFileTest() throws ApiException {
-        Long petId = null;
+    public void uploadFileTest() throws ApiException, IOException {
+        Long petId = 1L;
         String additionalMetadata = null;
-        File file = null;
+        File file = new File("test.txt");
+        if(!file.exists()){
+            file.createNewFile();
+        }
+        file.deleteOnExit();
         ModelApiResponse response = api.uploadFile(petId, additionalMetadata, file);
 
-        // TODO: test validations
+        Assert.assertEquals((long)response.getCode(), 200L);
     }
     
 }
