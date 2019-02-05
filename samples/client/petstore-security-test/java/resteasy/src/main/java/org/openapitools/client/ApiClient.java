@@ -47,7 +47,7 @@ import org.openapitools.client.auth.OAuth;
 
 public class ApiClient {
   private Map<String, String> defaultHeaderMap = new HashMap<String, String>();
-  private String basePath = "http://petstore.swagger.io:80/v2";
+  private String basePath = "http://petstore.swagger.io *_/ ' \" =end -- \\r\\n \\n \\r/v2 *_/ ' \" =end -- \\r\\n \\n \\r";
   private boolean debugging = false;
 
   private Client httpClient;
@@ -77,9 +77,7 @@ public class ApiClient {
 
     // Setup authentications (key: authentication name, value: authentication).
     authentications = new HashMap<String, Authentication>();
-    authentications.put("api_key", new ApiKeyAuth("header", "api_key"));
-    authentications.put("api_key_query", new ApiKeyAuth("query", "api_key_query"));
-    authentications.put("http_basic_test", new HttpBasicAuth());
+    authentications.put("api_key", new ApiKeyAuth("header", "api_key  */ &#39; &quot; &#x3D;end -- \r\n \n \r"));
     authentications.put("petstore_auth", new OAuth());
     // Prevent the authentications from being modified.
     authentications = Collections.unmodifiableMap(authentications);
